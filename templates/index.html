@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFA String Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff7dd2 0%, #c082ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .example-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .example-card {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .example-card:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .example-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+            font-weight: 600;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-accepted {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+
+        .result-rejected {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .result-accepted .result-message {
+            color: #155724;
+        }
+
+        .result-rejected .result-message {
+            color: #721c24;
+        }
+
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .trace-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .trace-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .trace-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .trace-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .state-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .char-code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 5px solid #dc3545;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .transition-builder {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .transition-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 50px;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .transition-item:last-child {
+            border-bottom: none;
+        }
+
+        .transition-item select {
+            padding: 10px;
+            font-size: 0.95em;
+        }
+
+        .transition-item button {
+            padding: 8px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .reject-badge {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DFA String Checker</h1>
+            <p>Check if strings are accepted by your Deterministic Finite Automaton</p>
+        </header>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab(0)">Examples</button>
+                <button class="tab-button" onclick="switchTab(1)">Custom DFA</button>
+            </div>
+
+            <!-- Tab 1: Examples -->
+            <div id="tab-0" class="tab-content active">
+                <div class="form-section">
+                    <h3>Select a Predefined Example</h3>
+                    <div class="example-select" id="examplesContainer"></div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Test String</h3>
+                    <div class="form-group">
+                        <label for="exampleInput">Enter a string to check:</label>
+                        <input type="text" id="exampleInput" placeholder="e.g., 01, 101, 0101" value="">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="checkExampleString()">Check String</button>
+                    </div>
+                </div>
+
+                <div id="exampleError" class="error-message"></div>
+                <div id="exampleResult" class="result-section"></div>
+            </div>
+
+            <!-- Tab 2: Custom DFA -->
+            <div id="tab-1" class="tab-content">
+                <div class="info-box">
+                    <strong>💡 How to define your DFA:</strong><br>
+                    1. Enter states (comma-separated)<br>
+                    2. Enter alphabet (characters separated by commas)<br>
+                    3. Define transitions (state + character → next state)<br>
+                    4. Select start and accept states<br>
+                    5. Test your DFA with input strings
+                </div>
+
+                <div class="form-section">
+                    <h3>DFA Configuration</h3>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="customStates">States (comma-separated):</label>
+                            <input type="text" id="customStates" placeholder="q0, q1, q2" value="q0,q1,q2">
+                        </div>
+                        <div class="form-group">
+                            <label for="customAlphabet">Alphabet (comma-separated):</label>
+                            <input type="text" id="customAlphabet" placeholder="0, 1" value="0,1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Transitions (from_state, char → to_state):</label>
+                        <div id="transitionsContainer" class="transition-builder"></div>
+                        <button class="btn-secondary btn-small" onclick="addTransition()">+ Add Transition</button>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="customStartState">Start State:</label>
+                            <select id="customStartState">
+                                <option>q0</option>
+                                <option>q1</option>
+                                <option>q2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customAcceptStates">Accept States (comma-separated):</label>
+                            <input type="text" id="customAcceptStates" placeholder="q1, q2" value="q2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Test String</h3>
+                    <div class="form-group">
+                        <label for="customInput">Enter a string to check:</label>
+                        <input type="text" id="customInput" placeholder="Enter test string" value="">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="checkCustomString()">Check String</button>
+                    </div>
+                </div>
+
+                <div id="customError" class="error-message"></div>
+                <div id="customResult" class="result-section"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        let selectedExample = null;
+
+        function initializeExamples() {
+            const examplesContainer = document.getElementById('examplesContainer');
+            const examples = {{ examples | safe }};
+            
+            for (const [key, example] of Object.entries(examples)) {
+                const card = document.createElement('div');
+                card.className = 'example-card';
+                card.addEventListener('click', () => selectExample(key, example, card));
+                card.innerHTML = `<strong>${example.name}</strong>`;
+                examplesContainer.appendChild(card);
+            }
+        }
+
+        function selectExample(key, example, element) {
+            // Update selected state
+            document.querySelectorAll('.example-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            selectedExample = {
+                key: key,
+                data: example
+            };
+
+            document.getElementById('exampleInput').value = '';
+            document.getElementById('exampleError').classList.remove('show');
+            document.getElementById('exampleResult').classList.remove('show');
+        }
+
+        function switchTab(index) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(`tab-${index}`).classList.add('active');
+            document.querySelectorAll('.tab-button')[index].classList.add('active');
+        }
+
+        function updateStateSelects() {
+            const states = document.getElementById('customStates').value
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s);
+            
+            const startSelect = document.getElementById('customStartState');
+            const currentStart = startSelect.value;
+            
+            startSelect.innerHTML = states.map(state => 
+                `<option ${state === currentStart ? 'selected' : ''}>${state}</option>`
+            ).join('');
+        }
+
+        function addTransition() {
+            const states = document.getElementById('customStates').value
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s);
+            
+            const alphabet = document.getElementById('customAlphabet').value
+                .split(',')
+                .map(c => c.trim())
+                .filter(c => c);
+
+            const container = document.getElementById('transitionsContainer');
+            const item = document.createElement('div');
+            item.className = 'transition-item';
+            
+            item.innerHTML = `
+                <select onchange="updateTransitionKey(this)">
+                    ${states.map(s => `<option>${s}</option>`).join('')}
+                </select>
+                <select onchange="updateTransitionKey(this)">
+                    ${alphabet.map(c => `<option>${c}</option>`).join('')}
+                </select>
+                <select>
+                    ${states.map(s => `<option>${s}</option>`).join('')}
+                </select>
+                <button class="btn-secondary btn-small" onclick="removeTransition(this)">−</button>
+            `;
+            
+            container.appendChild(item);
+        }
+
+        function removeTransition(button) {
+            button.parentElement.remove();
+        }
+
+        function getTransitions() {
+            const transitions = {};
+            document.querySelectorAll('.transition-item').forEach(item => {
+                const selects = item.querySelectorAll('select');
+                const fromState = selects[0].value;
+                const char = selects[1].value;
+                const toState = selects[2].value;
+                
+                if (fromState && char && toState) {
+                    transitions[`${fromState},${char}`] = toState;
+                }
+            });
+            return transitions;
+        }
+
+        function checkExampleString() {
+            if (!selectedExample) {
+                showError('exampleError', 'Please select an example first');
+                return;
+            }
+
+            const input = document.getElementById('exampleInput').value;
+            const example = selectedExample.data;
+            
+            // Convert example format to API format
+            const transitions = {};
+            for (const [key, value] of Object.entries(example.transitions)) {
+                transitions[key] = value;
+            }
+
+            checkDFA(input, example.states, example.alphabet, transitions, 
+                    example.start_state, example.accept_states, 'example');
+        }
+
+        function checkCustomString() {
+            const input = document.getElementById('customInput').value;
+            const states = document.getElementById('customStates').value
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s);
+            const alphabet = document.getElementById('customAlphabet').value
+                .split(',')
+                .map(c => c.trim())
+                .filter(c => c);
+            const startState = document.getElementById('customStartState').value;
+            const acceptStates = document.getElementById('customAcceptStates').value
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s);
+            
+            const transitions = getTransitions();
+
+            if (states.length === 0 || alphabet.length === 0 || !startState || acceptStates.length === 0) {
+                showError('customError', 'Please configure all DFA components');
+                return;
+            }
+
+            checkDFA(input, states, alphabet, transitions, startState, acceptStates, 'custom');
+        }
+
+        function checkDFA(input, states, alphabet, transitions, startState, acceptStates, tabType) {
+            const errorId = tabType === 'example' ? 'exampleError' : 'customError';
+            const resultId = tabType === 'example' ? 'exampleResult' : 'customResult';
+
+            fetch('/api/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    states: states,
+                    alphabet: alphabet,
+                    transitions: transitions,
+                    start_state: startState,
+                    accept_states: acceptStates,
+                    input_string: input
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(errorId, data.error);
+                    clearResult(resultId);
+                } else {
+                    clearError(errorId);
+                    displayResult(data, input, resultId);
+                }
+            })
+            .catch(error => {
+                showError(errorId, 'Error: ' + error.message);
+                clearResult(resultId);
+            });
+        }
+
+        function displayResult(data, input, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            const isAccepted = data.accepted;
+            
+            let html = `
+                <div class="result-message">
+                    ${isAccepted ? '✅ String ACCEPTED' : '❌ String REJECTED'}
+                </div>
+                <strong>Input:</strong> "${input || '(empty string)'}"<br>
+                <strong>Final State:</strong> <span class="state-badge">${data.final_state}</span><br>
+            `;
+
+            if (data.trace && data.trace.length > 1) {
+                html += `
+                    <strong>Execution Trace:</strong>
+                    <table class="trace-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Current State</th>
+                                <th>Input</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.trace.forEach(step => {
+                    html += `
+                        <tr>
+                            <td>${step.step}</td>
+                            <td><span class="state-badge">${step.state}</span></td>
+                            <td>${step.input ? `<span class="char-code">'${step.input}'</span>` : '—'}</td>
+                            <td>${step.message}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            resultDiv.innerHTML = html;
+            resultDiv.className = `result-section show ${isAccepted ? 'result-accepted' : 'result-rejected'}`;
+        }
+
+        function showError(errorId, message) {
+            const errorDiv = document.getElementById(errorId);
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function clearError(errorId) {
+            const errorDiv = document.getElementById(errorId);
+            errorDiv.classList.remove('show');
+        }
+
+        function clearResult(resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.classList.remove('show');
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeExamples();
+            
+            // Add initial transitions
+            document.getElementById('customStates').addEventListener('change', updateStateSelects);
+            
+            // Initialize state selects
+            updateStateSelects();
+            
+            // Add some default transitions
+            for (let i = 0; i < 3; i++) {
+                addTransition();
+            }
+        });
+    </script>
+</body>
+</html>
