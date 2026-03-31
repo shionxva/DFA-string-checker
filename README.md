@@ -1,79 +1,66 @@
 # DFA String Checker - Web Interface
 
-A modern, user-friendly web interface for checking if strings are accepted by a Deterministic Finite Automaton (DFA).
+A web interface to check your Deterministic Finite Automaton (DFA) transition diagram.
 
 ## Features
 
-✨ **Easy to Use**
-- Clean, intuitive interface with step-by-step execution trace
-- Try predefined DFA examples or create custom ones
-- Real-time validation with helpful error messages
-
-📚 **Predefined Examples**
+**Predefined Examples**
 - Strings ending with "01"
 - Even number of 1's
 - Strings starting with "1"
 
-⚙️ **Custom DFA Support**
+**Custom DFA**
 - Define your own states, alphabet, and transitions
 - Interactive transition builder
 - Full control over DFA configuration
 
-📊 **Detailed Execution Trace**
+**Detailed Execution Trace**
 - See each step of the DFA execution
 - Understand how states transition on each input character
 - Identify exactly where/why a string is rejected
 
 ## Installation
 
-### 1. Install Python Dependencies
+### 1. Dependencies
 
-```bash
+```terminal
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ### 2. Run the Flask Application
 
-```bash
+```terminal
 python dfa_web_app.py
 ```
 
 The application will start at `http://localhost:5000`
 
-### 3. Open in Browser
-
-Open your web browser and navigate to:
-```
-http://localhost:5000
-```
-
 ## Usage
 
 ### Using Predefined Examples
 
-1. Click on the **📚 Examples** tab
-2. Select an example DFA from the cards
-3. Enter a test string
-4. Click **Check String** to see the result
+1. Click on the **Examples** tab
+2. Enter a test string and then check the result
 
 ### Creating a Custom DFA
+*Prepare the transition diagram to not confuse yourself*
 
-1. Click on the **✏️ Custom DFA** tab
-2. Configure your DFA:
+1. Configure your DFA:
    - **States**: Enter comma-separated state names (e.g., `q0, q1, q2`)
    - **Alphabet**: Enter comma-separated input characters (e.g., `0, 1`)
    - **Transitions**: For each (state, character) pair, specify the target state
    - **Start State**: Select the initial state
    - **Accept States**: Enter comma-separated accepting states
-3. Enter your test string
-4. Click **Check String**
+   *You also need to clear the initial slots and add new slot for updated configuration*
+
+2. Click **Check String**
+
 
 ## Project Files
 
-- `dfa_checker.py` - Core DFA class (original command-line version)
+- `dfa_checker_proto.py` - Core DFA class logic and principles
 - `dfa_web_app.py` - Flask web server and API
-- `templates/index.html` - Web interface (HTML, CSS, JavaScript)
-- `requirements.txt` - Python package dependencies
 
 ## DFA Definition
 
@@ -86,7 +73,7 @@ A DFA consists of:
 
 ## API Endpoint
 
-The web app provides a REST API for checking strings:
+The web app provides a REST API to check strings:
 
 **POST /api/check**
 
@@ -137,23 +124,6 @@ Response:
 }
 ```
 
-## Troubleshooting
-
-**Port 5000 already in use?**
-- Change the port in the last line of `dfa_web_app.py`:
-  ```python
-  app.run(debug=True, port=8000)  # Use port 8000 instead
-  ```
-
-**Module not found error?**
-- Make sure Flask is installed:
-  ```bash
-  pip install flask
-  ```
-
-**Can't find templates?**
-- Ensure `templates/index.html` exists in the same directory as `dfa_web_app.py`
-
 ## Examples
 
 ### Example 1: Strings Ending with "01"
@@ -178,5 +148,8 @@ Response:
 - Test: "1" ✅, "100" ✅, "0" ❌
 
 ---
+# TODO:
+- DFA configuration input as a diagram instead of manual typing
 
-Made with ❤️ for theory of computation students!
+---
+TCSVGU
